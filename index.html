@@ -23,8 +23,18 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    var drawC = function() {
+    var drawC = function(colors) {
         clear();
+
+        if(colors === undefined) {
+          colors = [];
+          for(i=0; i<4; i++) {
+            var r = forceInterval(20, (Math.random()*255).toFixed(), 255);
+            var g = forceInterval(20, (Math.random()*255).toFixed(), 255);
+            var b = forceInterval(20, (Math.random()*255).toFixed(), 255);
+            colors.push('rgb(' + r + ', ' + g + ', ' + b + ')');
+          }
+        }
 
         var start = Math.PI/3;
         var step = Math.PI*2/6;
@@ -36,7 +46,8 @@
         var outerRadius = 100;
         var innerRadius = 10;
 
-        for(a = start+spacing; a < start+2*Math.PI*(4/6); a += step) {
+        for(i=0; i < 4; i++) {
+            var a = start+spacing + i*step;
             var dX = Math.cos(a);
             var dY = Math.sin(a);
 
@@ -51,10 +62,7 @@
             var dYc = Math.sin(c);
 
             // Set color for triangle
-            var r = forceInterval(20, (Math.random()*255).toFixed(), 255);
-            var g = forceInterval(20, (Math.random()*255).toFixed(), 255);
-            var b = forceInterval(20, (Math.random()*255).toFixed(), 255);
-            ctx.fillStyle = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+            ctx.fillStyle = colors[i];
 
             ctx.beginPath();
             ctx.moveTo(centerX+dX*outerRadius, centerY+dY*outerRadius);
@@ -65,6 +73,17 @@
             ctx.fill();
         }
     }
+
+
+    /* You can draw with specific colors like this:
+          drawC(["#000", "#F00", "#0F0", "#00F"]);
+     */
+
+    /* Or redraw with random colors every x mx:
+          var x = 1000;
+          drawC();
+          setInterval(drawC, x);
+     */
 
     drawC();
     setInterval(drawC, 1000);
