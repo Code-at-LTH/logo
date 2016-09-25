@@ -1,13 +1,59 @@
 <html>
 <head>
     <title>Code@LTH Logo</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -10;
+}
+
+button {
+  border: 1px solid #666 inset;
+  border-radius: 3px;
+  box-shadow: none;
+  font-size: 16px;
+}
+</style>
 </head>
 <body>
 
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <div>
+      <canvas id="canvas" width="100%" height="100%"></canvas>
+    <div>
+
+    <div style="margin: 10px">
+      <button onClick='drawWithCodeAtLTH()'>
+        Draw with Code@LTH v1
+      </button>
+      <br>
+      <br>
+      <button onClick='drawWithGOOG()'>
+        Draw with Google colors
+      </button>
+      <br>
+      <br>
+      <button onClick='drawWithMSFT()'>
+        Draw with Microsoft colors
+      </button>
+    </div>
 
     <script>
+    // Parameters
+    TRIANGLE_COLORS = [];
+    BACKGROUND_COLOR = "#222";
+    SIZE_COEFF = 1;
+
+
     // FIXME: Minor math error when calculating angle of inner vertex
+    //        Update: Looks correct with innerRadius = 8, but not for other values
     // TODO: Draw next triangle with an interval in between
     // TODO: Make the triangles "unfold" from nothingness
 
@@ -19,32 +65,36 @@
     }
 
     var clear = function() {
-        ctx.fillStyle = '#FFF';
+        ctx.fillStyle = BACKGROUND_COLOR;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function randomColors() {
+        colors = [];
+        for(i=0; i<4; i++) {
+          var r = forceInterval(20, (Math.random()*255).toFixed(), 255);
+          var g = forceInterval(20, (Math.random()*255).toFixed(), 255);
+          var b = forceInterval(20, (Math.random()*255).toFixed(), 255);
+          colors.push('rgb(' + r + ', ' + g + ', ' + b + ')');
+        }
+        return colors;
     }
 
     var drawC = function(colors) {
         clear();
 
-        if(colors === undefined) {
-          colors = [];
-          for(i=0; i<4; i++) {
-            var r = forceInterval(20, (Math.random()*255).toFixed(), 255);
-            var g = forceInterval(20, (Math.random()*255).toFixed(), 255);
-            var b = forceInterval(20, (Math.random()*255).toFixed(), 255);
-            colors.push('rgb(' + r + ', ' + g + ', ' + b + ')');
-          }
-        }
+        TRIANGLE_COLORS = colors;
 
         var start = Math.PI/3;
         var step = Math.PI*2/6;
         var spacing = Math.PI/360*5;
 
-        var centerX = 250;
-        var centerY = 250;
+        var centerX = window.innerWidth/2;
+        var centerY = window.innerHeight/2;
+        console.log(centerX, centerY);
 
-        var outerRadius = 100;
-        var innerRadius = 10;
+        var outerRadius = 100*SIZE_COEFF;
+        var innerRadius = 8*SIZE_COEFF;
 
         for(i=0; i < 4; i++) {
             var a = start+spacing + i*step;
@@ -74,21 +124,65 @@
         }
     }
 
+    function redraw() {
+      drawC(TRIANGLE_COLORS);
+    }
 
-    /* You can draw with specific colors like this:
-          drawC(["#000", "#F00", "#0F0", "#00F"]);
-     */
+    function init() {
+      window.addEventListener("resize", resize);
+      resize();
+      drawWithCodeAtLTH();
+    }
 
-    /* Or redraw with random colors every x mx:
-          var x = 1000;
-          drawC();
-          setInterval(drawC, x);
-     */
+    function drawWithCodeAtLTH() {
+        c1 = "#00c0de"
+        c2 = "#c23a73"
+        c3 = "#d3c0d3"
+        c4 = "#661177"
+        drawC([c4, c3, c2, c1]);
+    }
 
-    drawC();
-    setInterval(drawC, 1000);
+    function drawWithGOOG() {
+        // Google palette
+        red = "#D50F25"
+        yellow = "#EEB211"
+        green = "#009925"
+        blue = "#3369E8"
+        drawC([yellow ,red, blue, green]);
+    }
 
-    // Initial version written listening to Dragonforce, rock on!  //erb
+    function drawWithMSFT() {
+        // Microsoft palette
+        red = "#f65314"
+        yellow = "#ffbb00"
+        green = "#7cbb00"
+        blue = "#00a1f1"
+        drawC([yellow ,red, blue, green]);
+    }
+
+    function drawWithExperiment() {
+        // Experimentation palette
+        red = "#C44"
+        yellow = "#FFC400"
+        green = "#0A2"
+        blue = "#06B"
+        drawC([red, yellow, green, blue]);
+        drawC([yellow ,red, blue, green]);
+    }
+
+    function animateDraw() {
+        var x = 1000;
+        drawC();
+        setInterval(drawC, x);
+    }
+
+    function resize() {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+      redraw();
+    }
+
+    init();
     </script>
 </body>
 </html>
